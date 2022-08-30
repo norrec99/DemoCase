@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero, 100f, LayerMask.GetMask("Building", "Unit") );
+            RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero, 100f, LayerMask.GetMask("Building", "Unit"));
             if (hit.collider != null)
             {
                 if (currentSelected != null)
@@ -50,6 +50,26 @@ public class GameManager : MonoBehaviour
                     }
                     srCurrent = null;
                 }   
+            }
+        }
+        else if (Input.GetMouseButtonDown(1))
+        {
+            if (currentSelected != null)
+            {
+                LayerMask lm = LayerMask.GetMask("Unit");
+                if (lm == (lm | (1 << currentSelected.layer)))
+                {
+                    Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero, 100f, LayerMask.GetMask("Ground"));
+                    if (hit.collider != null)
+                    {
+                        UnitController unit = currentSelected.GetComponentInParent<UnitController>();
+                        if (unit != null)
+                        {
+                            unit.Move(hit.point);
+                        }
+                    }
+                }
             }
         }
     }
