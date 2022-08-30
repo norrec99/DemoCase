@@ -70,6 +70,21 @@ public class GameManager : MonoBehaviour
                         }
                     }
                 }
+
+                lm = LayerMask.GetMask("Building");
+                if (lm == (lm | (1 << currentSelected.layer)))
+                {
+                    Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero, 100f, LayerMask.GetMask("Ground"));
+                    if (hit.collider != null)
+                    {
+                        BuildingController building = currentSelected.GetComponentInParent<BuildingController>();
+                        if (building != null)
+                        {
+                            building.SetDestinationPoint(hit.point);
+                        }
+                    }
+                }
             }
         }
     }
