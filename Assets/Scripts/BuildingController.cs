@@ -7,6 +7,8 @@ public class BuildingController : MonoBehaviour
     [SerializeField] private GameObject producedUnit;
     [SerializeField] private GameObject spawnPos;
     [SerializeField] private GameObject destinationPos;
+    [SerializeField] public string buildingName;
+    [SerializeField] public int imageIndex;
     
     private float timeCounter;
 
@@ -19,14 +21,17 @@ public class BuildingController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        timeCounter -= Time.deltaTime;
-        if (timeCounter <= 0)
+        if (producedUnit != null)
         {
-            GameObject newUnit = Instantiate(producedUnit, spawnPos.transform.position, Quaternion.identity);
-            UnitController u = newUnit.GetComponent<UnitController>();
-            u.SetAgent();
-            u.Move(destinationPos.transform.position);
-            timeCounter = 2f;
+            timeCounter -= Time.deltaTime;
+            if (timeCounter <= 0)
+            {
+                GameObject newUnit = Instantiate(producedUnit, spawnPos.transform.position, Quaternion.identity);
+                UnitController u = newUnit.GetComponent<UnitController>();
+                u.SetAgent();
+                u.Move(destinationPos.transform.position);
+                timeCounter = 2f;
+            }
         }
     }
 

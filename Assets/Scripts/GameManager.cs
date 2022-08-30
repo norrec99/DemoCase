@@ -1,11 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private Material mat_normal;
     [SerializeField] private Material mat_selected;
+    [SerializeField] private GameObject informationPanel;
+    [SerializeField] private TMP_Text buildingName;
+
+    [SerializeField] private Image buildingImage;
+    [SerializeField] private Image productionImage;
+    [SerializeField] private TMP_Text productionImageName;
+    [SerializeField] private Sprite[] buildingImages;
 
     private GameObject currentSelected;
 
@@ -15,13 +25,50 @@ public class GameManager : MonoBehaviour
         
     }
 
+    private void UpdateUI(bool isSelected)
+    {
+        if (isSelected)
+        {
+            LayerMask lm = LayerMask.GetMask("Building");
+                if (lm == (lm | (1 << currentSelected.layer)))
+                {
+                    BuildingController b = currentSelected.GetComponentInParent<BuildingController>();
+                    if (b != null)
+                    {
+                        buildingName.text = b.buildingName;
+                        buildingImage.sprite = buildingImages[b.imageIndex];
+                        if (b.imageIndex == 0)
+                        {
+                            productionImage.gameObject.SetActive(true);
+                            productionImageName.gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            productionImage.gameObject.SetActive(false);
+                            productionImageName.gameObject.SetActive(false);
+                        }
+                    }
+                }
+        informationPanel.SetActive(true);
+        }
+        else
+        {
+            informationPanel.SetActive(false);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+        
         if (Input.GetMouseButtonDown(0))
         {
             Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero, 100f, LayerMask.GetMask("Building", "Unit"));
+            RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero, 100f, LayerMask.GetMask("Building"));
             if (hit.collider != null)
             {
                 if (currentSelected != null)
@@ -32,15 +79,19 @@ public class GameManager : MonoBehaviour
                         srCurrent.material = mat_normal;
                     }
                 }
+
+                // we've selected something
                 currentSelected = hit.transform.gameObject;
                 SpriteRenderer sr = currentSelected.GetComponent<SpriteRenderer>();
                 if (sr != null)
                 {
                     sr.material = mat_selected;
                 }
+                UpdateUI(true);
             }
             else
             {
+                // clicked on the empty
                 if (currentSelected != null)
                 {
                     SpriteRenderer srCurrent = currentSelected.GetComponent<SpriteRenderer>();
@@ -49,6 +100,8 @@ public class GameManager : MonoBehaviour
                         srCurrent.material = mat_normal;
                     }
                     srCurrent = null;
+
+                    UpdateUI(false);
                 }   
             }
         }
