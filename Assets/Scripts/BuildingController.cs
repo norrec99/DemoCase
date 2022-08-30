@@ -23,7 +23,9 @@ public class BuildingController : MonoBehaviour
         if (timeCounter <= 0)
         {
             GameObject newUnit = Instantiate(producedUnit, spawnPos.transform.position, Quaternion.identity);
-            newUnit.GetComponent<UnitController>().Move(destinationPos.transform.position);
+            UnitController u = newUnit.GetComponent<UnitController>();
+            u.SetAgent();
+            u.Move(destinationPos.transform.position);
             timeCounter = 2f;
         }
     }
