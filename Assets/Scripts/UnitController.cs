@@ -17,10 +17,9 @@ public class UnitController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
 
-    public void Move(Vector2 target)
+    public void Move(Vector3 target)
     {
         agent.SetDestination(target);
     }
